@@ -3,32 +3,29 @@
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 use crate::{
-    service::HapService,
-    characteristic::{
-        HapCharacteristic,
-		smoke_detected::SmokeDetectedCharacteristic,
-		name::NameCharacteristic,
-		status_active::StatusActiveCharacteristic,
-		status_fault::StatusFaultCharacteristic,
+	characteristic::{
+		name::NameCharacteristic, smoke_detected::SmokeDetectedCharacteristic,
+		status_active::StatusActiveCharacteristic, status_fault::StatusFaultCharacteristic,
 		status_low_battery::StatusLowBatteryCharacteristic,
-		status_tampered::StatusTamperedCharacteristic,
+		status_tampered::StatusTamperedCharacteristic, HapCharacteristic,
 	},
-    HapType,
+	service::HapService,
+	HapType,
 };
 
 /// Smoke Sensor service.
 #[derive(Debug, Default)]
 pub struct SmokeSensorService {
-    /// Instance ID of the Smoke Sensor service.
-    id: u64,
-    /// [`HapType`](HapType) of the Smoke Sensor service.
-    hap_type: HapType,
-    /// When set to true, this service is not visible to user.
-    hidden: bool,
-    /// When set to true, this is the primary service on the accessory.
-    primary: bool,
-    /// An array of numbers containing the instance IDs of the services that this service links to.
-    linked_services: Vec<u64>,
+	/// Instance ID of the Smoke Sensor service.
+	id: u64,
+	/// [`HapType`](HapType) of the Smoke Sensor service.
+	hap_type: HapType,
+	/// When set to true, this service is not visible to user.
+	hidden: bool,
+	/// When set to true, this is the primary service on the accessory.
+	primary: bool,
+	/// An array of numbers containing the instance IDs of the services that this service links to.
+	linked_services: Vec<u64>,
 
 	/// Smoke Detected characteristic (required).
 	pub smoke_detected: SmokeDetectedCharacteristic,
@@ -46,137 +43,130 @@ pub struct SmokeSensorService {
 }
 
 impl SmokeSensorService {
-    /// Creates a new Smoke Sensor service.
-    pub fn new(id: u64, accessory_id: u64) -> Self {
-        Self {
-            id,
-            hap_type: HapType::SmokeSensor,
-			smoke_detected: SmokeDetectedCharacteristic::new(id + 1 + 0, accessory_id),
-			name: Some(NameCharacteristic::new(id + 1 + 0 + 1, accessory_id)),
+	/// Creates a new Smoke Sensor service.
+	pub fn new(id: u64, accessory_id: u64) -> Self {
+		Self {
+			id,
+			hap_type: HapType::SmokeSensor,
+			smoke_detected: SmokeDetectedCharacteristic::new(id + 1, accessory_id),
+			name: Some(NameCharacteristic::new(id + 1 + 1, accessory_id)),
 			status_active: Some(StatusActiveCharacteristic::new(id + 1 + 1 + 1, accessory_id)),
 			status_fault: Some(StatusFaultCharacteristic::new(id + 1 + 2 + 1, accessory_id)),
-			status_low_battery: Some(StatusLowBatteryCharacteristic::new(id + 1 + 3 + 1, accessory_id)),
+			status_low_battery: Some(StatusLowBatteryCharacteristic::new(
+				id + 1 + 3 + 1,
+				accessory_id,
+			)),
 			status_tampered: Some(StatusTamperedCharacteristic::new(id + 1 + 4 + 1, accessory_id)),
 			..Default::default()
-        }
-    }
+		}
+	}
 }
 
 impl HapService for SmokeSensorService {
-    fn get_id(&self) -> u64 {
-        self.id
-    }
+	fn get_id(&self) -> u64 {
+		self.id
+	}
 
-    fn set_id(&mut self, id: u64) {
-        self.id = id;
-    }
+	fn set_id(&mut self, id: u64) {
+		self.id = id;
+	}
 
-    fn get_type(&self) -> HapType {
-        self.hap_type
-    }
+	fn get_type(&self) -> HapType {
+		self.hap_type
+	}
 
-    fn set_type(&mut self, hap_type: HapType) {
-        self.hap_type = hap_type;
-    }
+	fn set_type(&mut self, hap_type: HapType) {
+		self.hap_type = hap_type;
+	}
 
-    fn get_hidden(&self) -> bool {
-        self.hidden
-    }
+	fn get_hidden(&self) -> bool {
+		self.hidden
+	}
 
-    fn set_hidden(&mut self, hidden: bool) {
-        self.hidden = hidden;
-    }
+	fn set_hidden(&mut self, hidden: bool) {
+		self.hidden = hidden;
+	}
 
-    fn get_primary(&self) -> bool {
-        self.primary
-    }
+	fn get_primary(&self) -> bool {
+		self.primary
+	}
 
-    fn set_primary(&mut self, primary: bool) {
-        self.primary = primary;
-    }
+	fn set_primary(&mut self, primary: bool) {
+		self.primary = primary;
+	}
 
-    fn get_linked_services(&self) -> Vec<u64> {
-        self.linked_services.clone()
-    }
+	fn get_linked_services(&self) -> Vec<u64> {
+		self.linked_services.clone()
+	}
 
-    fn set_linked_services(&mut self, linked_services: Vec<u64>) {
-        self.linked_services = linked_services;
-    }
+	fn set_linked_services(&mut self, linked_services: Vec<u64>) {
+		self.linked_services = linked_services;
+	}
 
-    fn get_characteristic(&self, hap_type: HapType) -> Option<&dyn HapCharacteristic> {
-        for characteristic in self.get_characteristics() {
-            if characteristic.get_type() == hap_type {
-                return Some(characteristic);
-            }
-        }
-        None
-    }
+	fn get_characteristic(&self, hap_type: HapType) -> Option<&dyn HapCharacteristic> {
+		self.get_characteristics()
+			.into_iter()
+			.find(|&characteristic| characteristic.get_type() == hap_type)
+	}
 
-    fn get_mut_characteristic(&mut self, hap_type: HapType) -> Option<&mut dyn HapCharacteristic> {
-        for characteristic in self.get_mut_characteristics() {
-            if characteristic.get_type() == hap_type {
-                return Some(characteristic);
-            }
-        }
-        None
-    }
+	fn get_mut_characteristic(&mut self, hap_type: HapType) -> Option<&mut dyn HapCharacteristic> {
+		self.get_mut_characteristics()
+			.into_iter()
+			.find(|characteristic| characteristic.get_type() == hap_type)
+	}
 
-    fn get_characteristics(&self) -> Vec<&dyn HapCharacteristic> {
-        #[allow(unused_mut)]
-        let mut characteristics: Vec<&dyn HapCharacteristic> = vec![
-			&self.smoke_detected,
-		];
+	fn get_characteristics(&self) -> Vec<&dyn HapCharacteristic> {
+		#[allow(unused_mut)]
+		let mut characteristics: Vec<&dyn HapCharacteristic> = vec![&self.smoke_detected];
 		if let Some(c) = &self.name {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.status_active {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.status_fault {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.status_low_battery {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.status_tampered {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		characteristics
-    }
+	}
 
-    fn get_mut_characteristics(&mut self) -> Vec<&mut dyn HapCharacteristic> {
-        #[allow(unused_mut)]
-        let mut characteristics: Vec<&mut dyn HapCharacteristic> = vec![
-			&mut self.smoke_detected,
-		];
+	fn get_mut_characteristics(&mut self) -> Vec<&mut dyn HapCharacteristic> {
+		#[allow(unused_mut)]
+		let mut characteristics: Vec<&mut dyn HapCharacteristic> = vec![&mut self.smoke_detected];
 		if let Some(c) = &mut self.name {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.status_active {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.status_fault {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.status_low_battery {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.status_tampered {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		characteristics
-    }
+	}
 }
 
 impl Serialize for SmokeSensorService {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mut state = serializer.serialize_struct("HapService", 5)?;
-        state.serialize_field("iid", &self.get_id())?;
-        state.serialize_field("type", &self.get_type())?;
-        state.serialize_field("hidden", &self.get_hidden())?;
-        state.serialize_field("primary", &self.get_primary())?;
-        state.serialize_field("characteristics", &self.get_characteristics())?;
-        // linked services left out for now
-        state.end()
-    }
+	fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+		let mut state = serializer.serialize_struct("HapService", 5)?;
+		state.serialize_field("iid", &self.get_id())?;
+		state.serialize_field("type", &self.get_type())?;
+		state.serialize_field("hidden", &self.get_hidden())?;
+		state.serialize_field("primary", &self.get_primary())?;
+		state.serialize_field("characteristics", &self.get_characteristics())?;
+		// linked services left out for now
+		state.end()
+	}
 }

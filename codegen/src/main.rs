@@ -2,709 +2,714 @@ use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{
-    collections::HashMap,
-    fs::{self, File},
-    io::Write,
+	collections::HashMap,
+	fs::{self, File},
+	io::Write,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SystemMetadata {
-    #[serde(rename = "Version")]
-    pub version: usize,
-    #[serde(rename = "SchemaVersion")]
-    pub schema_version: usize,
-    #[serde(rename = "PlistDictionary")]
-    pub plist_dictionary: SystemPlistDictionary,
+	#[serde(rename = "Version")]
+	pub version: usize,
+	#[serde(rename = "SchemaVersion")]
+	pub schema_version: usize,
+	#[serde(rename = "PlistDictionary")]
+	pub plist_dictionary: SystemPlistDictionary,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SystemPlistDictionary {
-    #[serde(rename = "Version")]
-    pub version: usize,
-    #[serde(rename = "SchemaVersion")]
-    pub schema_version: usize,
-    #[serde(rename = "HomeKit")]
-    pub homekit: HomeKit,
-    #[serde(rename = "HAP")]
-    pub hap: Hap,
-    #[serde(rename = "Assistant")]
-    pub assistant: Assistant,
+	#[serde(rename = "Version")]
+	pub version: usize,
+	#[serde(rename = "SchemaVersion")]
+	pub schema_version: usize,
+	#[serde(rename = "HomeKit")]
+	pub homekit: HomeKit,
+	#[serde(rename = "HAP")]
+	pub hap: Hap,
+	#[serde(rename = "Assistant")]
+	pub assistant: Assistant,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct HomeKit {
-    #[serde(rename = "Categories")]
-    pub categories: HashMap<String, HomeKitCategory>,
+	#[serde(rename = "Categories")]
+	pub categories: HashMap<String, HomeKitCategory>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct HomeKitCategory {
-    #[serde(rename = "DefaultDescription")]
-    pub name: String,
-    #[serde(rename = "Identifier")]
-    pub number: u8,
-    #[serde(rename = "UUID")]
-    pub uuid: String,
+	#[serde(rename = "DefaultDescription")]
+	pub name: String,
+	#[serde(rename = "Identifier")]
+	pub number: u8,
+	#[serde(rename = "UUID")]
+	pub uuid: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct Hap {
-    #[serde(rename = "Base UUID")]
-    pub base_uuid: String,
-    #[serde(rename = "Characteristics")]
-    pub characteristics: HashMap<String, HapCharacteristic>,
-    #[serde(rename = "Services")]
-    pub services: HashMap<String, HapService>,
-    #[serde(rename = "Properties")]
-    pub properties: HashMap<String, HapProperty>,
+	#[serde(rename = "Base UUID")]
+	pub base_uuid: String,
+	#[serde(rename = "Characteristics")]
+	pub characteristics: HashMap<String, HapCharacteristic>,
+	#[serde(rename = "Services")]
+	pub services: HashMap<String, HapService>,
+	#[serde(rename = "Properties")]
+	pub properties: HashMap<String, HapProperty>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct HapCharacteristic {
-    #[serde(rename = "ShortUUID")]
-    pub short_uuid: String,
-    #[serde(rename = "DefaultDescription")]
-    pub name: String,
-    #[serde(rename = "Format")]
-    pub format: String,
-    #[serde(rename = "MinValue")]
-    pub min_value: Option<Value>,
-    #[serde(rename = "MaxValue")]
-    pub max_value: Option<Value>,
-    #[serde(rename = "StepValue")]
-    pub step_value: Option<Value>,
-    #[serde(rename = "MaxLength")]
-    pub max_length: Option<Value>,
-    #[serde(rename = "Units")]
-    pub units: Option<String>,
-    #[serde(rename = "Properties")]
-    pub properties: usize,
+	#[serde(rename = "ShortUUID")]
+	pub short_uuid: String,
+	#[serde(rename = "DefaultDescription")]
+	pub name: String,
+	#[serde(rename = "Format")]
+	pub format: String,
+	#[serde(rename = "MinValue")]
+	pub min_value: Option<Value>,
+	#[serde(rename = "MaxValue")]
+	pub max_value: Option<Value>,
+	#[serde(rename = "StepValue")]
+	pub step_value: Option<Value>,
+	#[serde(rename = "MaxLength")]
+	pub max_length: Option<Value>,
+	#[serde(rename = "Units")]
+	pub units: Option<String>,
+	#[serde(rename = "Properties")]
+	pub properties: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct HapService {
-    #[serde(rename = "ShortUUID")]
-    pub short_uuid: String,
-    #[serde(rename = "DefaultDescription")]
-    pub name: String,
-    #[serde(rename = "Characteristics")]
-    pub characteristics: HapServiceCharacteristicRelation,
+	#[serde(rename = "ShortUUID")]
+	pub short_uuid: String,
+	#[serde(rename = "DefaultDescription")]
+	pub name: String,
+	#[serde(rename = "Characteristics")]
+	pub characteristics: HapServiceCharacteristicRelation,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct HapServiceCharacteristicRelation {
-    #[serde(rename = "Required")]
-    pub required_characteristics: Vec<String>,
-    #[serde(rename = "Optional")]
-    pub optional_characteristics: Option<Vec<String>>,
+	#[serde(rename = "Required")]
+	pub required_characteristics: Vec<String>,
+	#[serde(rename = "Optional")]
+	pub optional_characteristics: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct HapProperty {
-    #[serde(rename = "DefaultDescription")]
-    pub name: String,
-    #[serde(rename = "Position")]
-    pub number: u8,
+	#[serde(rename = "DefaultDescription")]
+	pub name: String,
+	#[serde(rename = "Position")]
+	pub number: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct Assistant {
-    #[serde(rename = "Characteristics")]
-    pub characteristics: HashMap<String, AssistantCharacteristic>,
+	#[serde(rename = "Characteristics")]
+	pub characteristics: HashMap<String, AssistantCharacteristic>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct AssistantCharacteristic {
-    #[serde(rename = "Format")]
-    pub format: String,
-    #[serde(rename = "Read")]
-    pub read: Option<String>,
-    #[serde(rename = "Write")]
-    pub write: Option<String>,
-    #[serde(rename = "ReadWrite")]
-    pub read_write: Option<String>,
-    #[serde(rename = "Values")]
-    pub values: Option<HashMap<String, Value>>,
-    #[serde(rename = "OutValues")]
-    pub out_values: Option<HashMap<String, Value>>,
+	#[serde(rename = "Format")]
+	pub format: String,
+	#[serde(rename = "Read")]
+	pub read: Option<String>,
+	#[serde(rename = "Write")]
+	pub write: Option<String>,
+	#[serde(rename = "ReadWrite")]
+	pub read_write: Option<String>,
+	#[serde(rename = "Values")]
+	pub values: Option<HashMap<String, Value>>,
+	#[serde(rename = "OutValues")]
+	pub out_values: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct RenderMetadata {
-    pub categories: HashMap<String, HomeKitCategory>,
-    pub sorted_categories: Vec<HomeKitCategory>,
-    pub characteristics: HashMap<String, HapCharacteristic>,
-    pub sorted_characteristics: Vec<HapCharacteristic>,
-    pub services: HashMap<String, HapService>,
-    pub sorted_services: Vec<HapService>,
-    pub properties: HashMap<String, HapProperty>,
-    pub assistant_characteristics: HashMap<String, AssistantCharacteristic>,
-    pub characteristic_in_values: HashMap<String, HashMap<String, Value>>,
-    pub characteristic_out_values: HashMap<String, HashMap<String, Value>>,
+	pub categories: HashMap<String, HomeKitCategory>,
+	pub sorted_categories: Vec<HomeKitCategory>,
+	pub characteristics: HashMap<String, HapCharacteristic>,
+	pub sorted_characteristics: Vec<HapCharacteristic>,
+	pub services: HashMap<String, HapService>,
+	pub sorted_services: Vec<HapService>,
+	pub properties: HashMap<String, HapProperty>,
+	pub assistant_characteristics: HashMap<String, AssistantCharacteristic>,
+	pub characteristic_in_values: HashMap<String, HashMap<String, Value>>,
+	pub characteristic_out_values: HashMap<String, HashMap<String, Value>>,
 }
 
 impl From<SystemMetadata> for RenderMetadata {
-    fn from(v: SystemMetadata) -> Self {
-        let mut m = v.plist_dictionary;
+	fn from(v: SystemMetadata) -> Self {
+		let mut m = v.plist_dictionary;
 
-        // rename mislabeled services
-        let mut accessory_information_service = m.hap.services.get_mut("accessory-information").unwrap();
-        accessory_information_service.name = "Accessory Information".to_string();
-        let mut fan_v2_service = m.hap.services.get_mut("fanv2").unwrap();
-        fan_v2_service.name = "Fan v2".to_string();
-        let mut smart_speaker_service = m.hap.services.get_mut("smart-speaker").unwrap();
-        smart_speaker_service.name = "Smart Speaker".to_string();
+		// rename mislabeled services
+		let mut accessory_information_service =
+			m.hap.services.get_mut("accessory-information").unwrap();
+		accessory_information_service.name = "Accessory Information".to_string();
+		let mut fan_v2_service = m.hap.services.get_mut("fanv2").unwrap();
+		fan_v2_service.name = "Fan v2".to_string();
+		let mut smart_speaker_service = m.hap.services.get_mut("smart-speaker").unwrap();
+		smart_speaker_service.name = "Smart Speaker".to_string();
 
-        let mut sorted_categories = m.homekit.categories.iter().map(|(_, v)| v.clone()).collect::<Vec<_>>();
-        sorted_categories.sort_by(|a, b| a.number.partial_cmp(&b.number).unwrap());
+		let mut sorted_categories =
+			m.homekit.categories.iter().map(|(_, v)| v.clone()).collect::<Vec<_>>();
+		sorted_categories.sort_by(|a, b| a.number.partial_cmp(&b.number).unwrap());
 
-        let mut sorted_characteristics = m.hap.characteristics.iter().map(|(_, v)| v.clone()).collect::<Vec<_>>();
-        sorted_characteristics.sort_by(|a, b| a.name.cmp(&b.name));
+		let mut sorted_characteristics =
+			m.hap.characteristics.iter().map(|(_, v)| v.clone()).collect::<Vec<_>>();
+		sorted_characteristics.sort_by(|a, b| a.name.cmp(&b.name));
 
-        let mut sorted_services = m.hap.services.iter().map(|(_, v)| v.clone()).collect::<Vec<_>>();
-        sorted_services.sort_by(|a, b| a.name.cmp(&b.name));
+		let mut sorted_services = m.hap.services.iter().map(|(_, v)| v.clone()).collect::<Vec<_>>();
+		sorted_services.sort_by(|a, b| a.name.cmp(&b.name));
 
-        let mut characteristic_in_values = HashMap::new();
-        let mut characteristic_out_values = HashMap::new();
+		let mut characteristic_in_values = HashMap::new();
+		let mut characteristic_out_values = HashMap::new();
 
-        for (_, characteristic) in m.assistant.characteristics.clone() {
-            if let (Some(ref read_name), Some(ref values), &None) =
-                (&characteristic.read, &characteristic.values, &characteristic.out_values)
-            {
-                characteristic_in_values.insert(read_name.clone(), values.clone());
-            }
+		for (_, characteristic) in m.assistant.characteristics.clone() {
+			if let (Some(ref read_name), Some(ref values), &None) =
+				(&characteristic.read, &characteristic.values, &characteristic.out_values)
+			{
+				characteristic_in_values.insert(read_name.clone(), values.clone());
+			}
 
-            if let (Some(ref read_write_name), Some(ref values), &None) = (
-                &characteristic.read_write,
-                &characteristic.values,
-                &characteristic.out_values,
-            ) {
-                characteristic_in_values.insert(read_write_name.clone(), values.clone());
-            }
+			if let (Some(ref read_write_name), Some(ref values), &None) =
+				(&characteristic.read_write, &characteristic.values, &characteristic.out_values)
+			{
+				characteristic_in_values.insert(read_write_name.clone(), values.clone());
+			}
 
-            if let (Some(read_name), Some(out_values)) = (characteristic.read, characteristic.out_values) {
-                characteristic_out_values.insert(read_name, out_values);
-            }
+			if let (Some(read_name), Some(out_values)) =
+				(characteristic.read, characteristic.out_values)
+			{
+				characteristic_out_values.insert(read_name, out_values);
+			}
 
-            if let (Some(write_name), Some(values)) = (characteristic.write, characteristic.values) {
-                characteristic_in_values.insert(write_name, values);
-            }
-        }
+			if let (Some(write_name), Some(values)) = (characteristic.write, characteristic.values)
+			{
+				characteristic_in_values.insert(write_name, values);
+			}
+		}
 
-        Self {
-            categories: m.homekit.categories,
-            sorted_categories,
-            characteristics: m.hap.characteristics,
-            sorted_characteristics,
-            services: m.hap.services,
-            sorted_services,
-            properties: m.hap.properties,
-            assistant_characteristics: m.assistant.characteristics,
-            characteristic_in_values,
-            characteristic_out_values,
-        }
-    }
+		Self {
+			categories: m.homekit.categories,
+			sorted_categories,
+			characteristics: m.hap.characteristics,
+			sorted_characteristics,
+			services: m.hap.services,
+			sorted_services,
+			properties: m.hap.properties,
+			assistant_characteristics: m.assistant.characteristics,
+			characteristic_in_values,
+			characteristic_out_values,
+		}
+	}
 }
 
 fn if_eq_helper<'reg, 'rc>(
-    h: &Helper<'reg, 'rc>,
-    r: &'reg Handlebars,
-    c: &Context,
-    rc: &mut RenderContext<'reg>,
-    out: &mut dyn Output,
+	h: &Helper<'reg, 'rc>,
+	r: &'reg Handlebars,
+	c: &Context,
+	rc: &mut RenderContext<'reg>,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let first = h.param(0).unwrap().value();
-    let second = h.param(1).unwrap().value();
-    let tmpl = if first == second { h.template() } else { h.inverse() };
-    match tmpl {
-        Some(ref t) => t.render(r, c, rc, out),
-        None => Ok(()),
-    }
+	let first = h.param(0).unwrap().value();
+	let second = h.param(1).unwrap().value();
+	let tmpl = if first == second { h.template() } else { h.inverse() };
+	match tmpl {
+		Some(ref t) => t.render(r, c, rc, out),
+		None => Ok(()),
+	}
 }
 
 fn trim_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value();
-    if let Some(s) = param.as_str() {
-        let trim = s.replace(" ", "").replace(".", "_");
-        out.write(&trim)?;
-    }
-    Ok(())
+	let param = h.param(0).unwrap().value();
+	if let Some(s) = param.as_str() {
+		let trim = s.replace(" ", "").replace(".", "_");
+		out.write(&trim)?;
+	}
+	Ok(())
 }
 
 fn file_name_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value();
-    if let Some(s) = param.as_str() {
-        let name = s.replace(" ", "_").replace(".", "_").to_lowercase();
-        out.write(&name)?;
-    }
-    Ok(())
+	let param = h.param(0).unwrap().value();
+	if let Some(s) = param.as_str() {
+		let name = s.replace(" ", "_").replace(".", "_").to_lowercase();
+		out.write(&name)?;
+	}
+	Ok(())
 }
 
 fn type_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value();
-    if let Some(s) = param.as_str() {
-        match s {
-            "bool" => {
-                out.write("bool")?;
-            },
-            "uint8" => {
-                out.write("u8")?;
-            },
-            "uint16" => {
-                out.write("u16")?;
-            },
-            "uint32" => {
-                out.write("u32")?;
-            },
-            "uint64" => {
-                out.write("u64")?;
-            },
-            "int" => {
-                out.write("i32")?;
-            },
-            "int32" => {
-                out.write("i32")?;
-            },
-            "float" => {
-                out.write("f32")?;
-            },
-            "string" => {
-                out.write("String")?;
-            },
-            "tlv8" => {
-                out.write("Vec<u8>")?;
-            },
-            "data" => {
-                out.write("Vec<u8>")?;
-            },
-            _ => {
-                return Err(RenderError::new("Unknown Characteristic format"));
-            },
-        }
-    }
-    Ok(())
+	let param = h.param(0).unwrap().value();
+	if let Some(s) = param.as_str() {
+		match s {
+			"bool" => {
+				out.write("bool")?;
+			},
+			"uint8" => {
+				out.write("u8")?;
+			},
+			"uint16" => {
+				out.write("u16")?;
+			},
+			"uint32" => {
+				out.write("u32")?;
+			},
+			"uint64" => {
+				out.write("u64")?;
+			},
+			"int" => {
+				out.write("i32")?;
+			},
+			"int32" => {
+				out.write("i32")?;
+			},
+			"float" => {
+				out.write("f32")?;
+			},
+			"string" => {
+				out.write("String")?;
+			},
+			"tlv8" => {
+				out.write("Vec<u8>")?;
+			},
+			"data" => {
+				out.write("Vec<u8>")?;
+			},
+			_ => {
+				return Err(RenderError::new("Unknown Characteristic format"));
+			},
+		}
+	}
+	Ok(())
 }
 
 fn format_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value();
-    if let Some(s) = param.as_str() {
-        match s {
-            "bool" => {
-                out.write("Format::Bool")?;
-            },
-            "uint8" => {
-                out.write("Format::UInt8")?;
-            },
-            "uint16" => {
-                out.write("Format::UInt16")?;
-            },
-            "uint32" => {
-                out.write("Format::UInt32")?;
-            },
-            "uint64" => {
-                out.write("Format::UInt64")?;
-            },
-            "int" => {
-                out.write("Format::Int32")?;
-            },
-            "int32" => {
-                out.write("Format::Int32")?;
-            },
-            "float" => {
-                out.write("Format::Float")?;
-            },
-            "string" => {
-                out.write("Format::String")?;
-            },
-            "tlv8" => {
-                out.write("Format::Tlv8")?;
-            },
-            "data" => {
-                out.write("Format::Data")?;
-            },
-            _ => {
-                return Err(RenderError::new("Unknown Characteristic format"));
-            },
-        }
-    }
-    Ok(())
+	let param = h.param(0).unwrap().value();
+	if let Some(s) = param.as_str() {
+		match s {
+			"bool" => {
+				out.write("Format::Bool")?;
+			},
+			"uint8" => {
+				out.write("Format::UInt8")?;
+			},
+			"uint16" => {
+				out.write("Format::UInt16")?;
+			},
+			"uint32" => {
+				out.write("Format::UInt32")?;
+			},
+			"uint64" => {
+				out.write("Format::UInt64")?;
+			},
+			"int" => {
+				out.write("Format::Int32")?;
+			},
+			"int32" => {
+				out.write("Format::Int32")?;
+			},
+			"float" => {
+				out.write("Format::Float")?;
+			},
+			"string" => {
+				out.write("Format::String")?;
+			},
+			"tlv8" => {
+				out.write("Format::Tlv8")?;
+			},
+			"data" => {
+				out.write("Format::Data")?;
+			},
+			_ => {
+				return Err(RenderError::new("Unknown Characteristic format"));
+			},
+		}
+	}
+	Ok(())
 }
 
 fn unit_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value();
-    if let Some(s) = param.as_str() {
-        match s {
-            "celsius" => {
-                out.write("Unit::Celsius")?;
-            },
-            "fahrenheit" => {
-                out.write("Unit::Celsius")?;
-            },
-            "percentage" => {
-                out.write("Unit::Percentage")?;
-            },
-            "arcdegrees" => {
-                out.write("Unit::ArcDegrees")?;
-            },
+	let param = h.param(0).unwrap().value();
+	if let Some(s) = param.as_str() {
+		match s {
+			"celsius" => {
+				out.write("Unit::Celsius")?;
+			},
+			"fahrenheit" => {
+				out.write("Unit::Celsius")?;
+			},
+			"percentage" => {
+				out.write("Unit::Percentage")?;
+			},
+			"arcdegrees" => {
+				out.write("Unit::ArcDegrees")?;
+			},
 
-            "lux" => {
-                out.write("Unit::Lux")?;
-            },
-            "seconds" => {
-                out.write("Unit::Seconds")?;
-            },
-            "ppm" => {
-                out.write("Unit::PartsPerMillion")?;
-            },
-            "micrograms/m^3" => {
-                out.write("Unit::MicrogramsPerCubicMeter")?;
-            },
-            _ => {
-                return Err(RenderError::new("Unknown Characteristic unit"));
-            },
-        }
-    }
-    Ok(())
+			"lux" => {
+				out.write("Unit::Lux")?;
+			},
+			"seconds" => {
+				out.write("Unit::Seconds")?;
+			},
+			"ppm" => {
+				out.write("Unit::PartsPerMillion")?;
+			},
+			"micrograms/m^3" => {
+				out.write("Unit::MicrogramsPerCubicMeter")?;
+			},
+			_ => {
+				return Err(RenderError::new("Unknown Characteristic unit"));
+			},
+		}
+	}
+	Ok(())
 }
 
 fn category_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value().as_str().unwrap();
+	let param = h.param(0).unwrap().value().as_str().unwrap();
 
-    match param.to_lowercase().as_str() {
-        "air quality sensor"
-        | "carbon dioxide sensor"
-        | "carbon monoxide sensor"
-        | "contact sensor"
-        | "humidity sensor"
-        | "leak sensor"
-        | "light sensor"
-        | "motion sensor"
-        | "occupancy sensor"
-        | "smoke sensor"
-        | "temperature sensor" => {
-            out.write("AccessoryCategory::Sensor")?;
-        },
-        "doorbell" => {
-            out.write("AccessoryCategory::VideoDoorbell")?;
-        },
-        "fan v2" => {
-            out.write("AccessoryCategory::Fan")?;
-        },
-        "heater-cooler" => {
-            out.write("AccessoryCategory::AirHeater /* or AccessoryCategory::AirConditioner */")?;
-        },
-        "humidifier-dehumidifier" => {
-            out.write("AccessoryCategory::AirHumidifier /* or AccessoryCategory::AirDehumidifier */")?;
-        },
-        "irrigation-system" => {
-            out.write("AccessoryCategory::Sprinkler")?;
-        },
-        "smart speaker" => {
-            out.write("AccessoryCategory::Speaker")?;
-        },
-        "stateful programmable switch" | "stateless programmable switch" => {
-            out.write("AccessoryCategory::ProgrammableSwitch")?;
-        },
-        "wi-fi satellite" => {
-            out.write("AccessoryCategory::WiFiRouter")?;
-        },
-        _ => {
-            let param = param.replace("-", " ");
-            let name = param
-                .to_lowercase()
-                .split(" ")
-                .into_iter()
-                .map(|word| {
-                    let mut c = word.chars().collect::<Vec<char>>();
-                    c[0] = c[0].to_uppercase().nth(0).unwrap();
-                    c.into_iter().collect::<String>()
-                })
-                .collect::<String>();
-            let name = name.replace(" ", "").replace(".", "_");
-            out.write(&format!("AccessoryCategory::{}", name))?;
-        },
-    }
+	match param.to_lowercase().as_str() {
+		"air quality sensor"
+		| "carbon dioxide sensor"
+		| "carbon monoxide sensor"
+		| "contact sensor"
+		| "humidity sensor"
+		| "leak sensor"
+		| "light sensor"
+		| "motion sensor"
+		| "occupancy sensor"
+		| "smoke sensor"
+		| "temperature sensor" => {
+			out.write("AccessoryCategory::Sensor")?;
+		},
+		"doorbell" => {
+			out.write("AccessoryCategory::VideoDoorbell")?;
+		},
+		"fan v2" => {
+			out.write("AccessoryCategory::Fan")?;
+		},
+		"heater-cooler" => {
+			out.write("AccessoryCategory::AirHeater /* or AccessoryCategory::AirConditioner */")?;
+		},
+		"humidifier-dehumidifier" => {
+			out.write(
+				"AccessoryCategory::AirHumidifier /* or AccessoryCategory::AirDehumidifier */",
+			)?;
+		},
+		"irrigation-system" => {
+			out.write("AccessoryCategory::Sprinkler")?;
+		},
+		"smart speaker" => {
+			out.write("AccessoryCategory::Speaker")?;
+		},
+		"stateful programmable switch" | "stateless programmable switch" => {
+			out.write("AccessoryCategory::ProgrammableSwitch")?;
+		},
+		"wi-fi satellite" => {
+			out.write("AccessoryCategory::WiFiRouter")?;
+		},
+		_ => {
+			let param = param.replace("-", " ");
+			let name = param
+				.to_lowercase()
+				.split(" ")
+				.into_iter()
+				.map(|word| {
+					let mut c = word.chars().collect::<Vec<char>>();
+					c[0] = c[0].to_uppercase().nth(0).unwrap();
+					c.into_iter().collect::<String>()
+				})
+				.collect::<String>();
+			let name = name.replace(" ", "").replace(".", "_");
+			out.write(&format!("AccessoryCategory::{}", name))?;
+		},
+	}
 
-    Ok(())
+	Ok(())
 }
 
 fn uuid_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value();
-    if let Some(s) = param.as_str() {
-        out.write(&shorten_uuid(&s))?;
-    }
-    Ok(())
+	let param = h.param(0).unwrap().value();
+	if let Some(s) = param.as_str() {
+		out.write(&shorten_uuid(&s))?;
+	}
+	Ok(())
 }
 
 fn in_values_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value().as_object().unwrap();
-    let mut values = param
-        .into_iter()
-        .map(|(key, val)| (key.clone(), val.clone().to_string().replace("\"", "")))
-        .collect::<Vec<(String, String)>>();
-    values.sort_by(|a, b| a.1.cmp(&b.1));
+	let param = h.param(0).unwrap().value().as_object().unwrap();
+	let mut values = param
+		.into_iter()
+		.map(|(key, val)| (key.clone(), val.clone().to_string().replace("\"", "")))
+		.collect::<Vec<(String, String)>>();
+	values.sort_by(|a, b| a.1.cmp(&b.1));
 
-    let mut output = String::from("vec![\n");
-    for (key, val) in values {
-        output.push_str(&format!("\t\t\t\t{}, // {}\n", val, key));
-    }
-    output.push_str("\t\t\t]");
-    out.write(&output)?;
+	let mut output = String::from("vec![\n");
+	for (key, val) in values {
+		output.push_str(&format!("\t\t\t\t{}, // {}\n", val, key));
+	}
+	output.push_str("\t\t\t]");
+	out.write(&output)?;
 
-    Ok(())
+	Ok(())
 }
 
 fn out_values_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value().as_object().unwrap();
-    let mut values = param
-        .into_iter()
-        .map(|(key, val)| (val.clone().to_string().replace("\"", ""), key.clone()))
-        .collect::<Vec<(String, String)>>();
-    values.sort_by(|a, b| a.1.cmp(&b.1));
+	let param = h.param(0).unwrap().value().as_object().unwrap();
+	let mut values = param
+		.into_iter()
+		.map(|(key, val)| (val.clone().to_string().replace("\"", ""), key.clone()))
+		.collect::<Vec<(String, String)>>();
+	values.sort_by(|a, b| a.1.cmp(&b.1));
 
-    let mut output = String::from("vec![\n");
-    for (key, val) in values {
-        output.push_str(&format!("\t\t\t\t{}, // {}\n", val, key));
-    }
-    output.push_str("\t\t\t]");
-    out.write(&output)?;
+	let mut output = String::from("vec![\n");
+	for (key, val) in values {
+		output.push_str(&format!("\t\t\t\t{}, // {}\n", val, key));
+	}
+	output.push_str("\t\t\t]");
+	out.write(&output)?;
 
-    Ok(())
+	Ok(())
 }
 
 fn in_values_enum_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value().as_object().unwrap();
-    let mut values = param
-        .into_iter()
-        .map(|(key, val)| (key.clone(), val.clone().to_string().replace("\"", "")))
-        .collect::<Vec<(String, String)>>();
-    values.sort_by(|a, b| a.1.cmp(&b.1));
+	let param = h.param(0).unwrap().value().as_object().unwrap();
+	let mut values = param
+		.into_iter()
+		.map(|(key, val)| (key.clone(), val.clone().to_string().replace("\"", "")))
+		.collect::<Vec<(String, String)>>();
+	values.sort_by(|a, b| a.1.cmp(&b.1));
 
-    let mut output = String::from("\npub enum Value {\n");
-    for (key, val) in values {
-        let key = key
-            .to_lowercase()
-            .split("_")
-            .into_iter()
-            .map(|word| {
-                let mut c = word.chars().collect::<Vec<char>>();
+	let mut output = String::from("\npub enum Value {\n");
+	for (key, val) in values {
+		let key = key
+			.to_lowercase()
+			.split("_")
+			.into_iter()
+			.map(|word| {
+				let mut c = word.chars().collect::<Vec<char>>();
 
-                if c.len() == 1 && c[0].is_numeric() {
-                    format!("Num{}", c[0])
-                } else {
-                    c[0] = c[0].to_uppercase().nth(0).unwrap();
-                    c.into_iter().collect::<String>()
-                }
-            })
-            .collect::<String>();
+				if c.len() == 1 && c[0].is_numeric() {
+					format!("Num{}", c[0])
+				} else {
+					c[0] = c[0].to_uppercase().nth(0).unwrap();
+					c.into_iter().collect::<String>()
+				}
+			})
+			.collect::<String>();
 
-        output.push_str(&format!("\t{} = {},\n", key, val));
-    }
-    output.push_str("}\n");
-    out.write(&output)?;
+		output.push_str(&format!("\t{} = {},\n", key, val));
+	}
+	output.push_str("}\n");
+	out.write(&output)?;
 
-    Ok(())
+	Ok(())
 }
 
 fn out_values_enum_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value().as_object().unwrap();
-    let mut values = param
-        .into_iter()
-        .map(|(key, val)| (val.clone().to_string().replace("\"", ""), key.clone()))
-        .collect::<Vec<(String, String)>>();
-    values.sort_by(|a, b| a.1.cmp(&b.1));
+	let param = h.param(0).unwrap().value().as_object().unwrap();
+	let mut values = param
+		.into_iter()
+		.map(|(key, val)| (val.clone().to_string().replace("\"", ""), key.clone()))
+		.collect::<Vec<(String, String)>>();
+	values.sort_by(|a, b| a.1.cmp(&b.1));
 
-    let mut output = String::from("\npub enum Value {\n");
-    for (key, val) in values {
-        let key = key
-            .to_lowercase()
-            .split("_")
-            .into_iter()
-            .map(|word| {
-                let mut c = word.chars().collect::<Vec<char>>();
+	let mut output = String::from("\npub enum Value {\n");
+	for (key, val) in values {
+		let key = key
+			.to_lowercase()
+			.split("_")
+			.into_iter()
+			.map(|word| {
+				let mut c = word.chars().collect::<Vec<char>>();
 
-                if c.len() == 1 && c[0].is_numeric() {
-                    format!("Num{}", c[0])
-                } else {
-                    c[0] = c[0].to_uppercase().nth(0).unwrap();
-                    c.into_iter().collect::<String>()
-                }
-            })
-            .collect::<String>();
+				if c.len() == 1 && c[0].is_numeric() {
+					format!("Num{}", c[0])
+				} else {
+					c[0] = c[0].to_uppercase().nth(0).unwrap();
+					c.into_iter().collect::<String>()
+				}
+			})
+			.collect::<String>();
 
-        output.push_str(&format!("\t{} = {},\n", key, val));
-    }
-    output.push_str("}\n");
-    out.write(&output)?;
+		output.push_str(&format!("\t{} = {},\n", key, val));
+	}
+	output.push_str("}\n");
+	out.write(&output)?;
 
-    Ok(())
+	Ok(())
 }
 
 fn perms_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let perms = vec![
-        (1 << 0, "\n\t\t\t\tPerm::Events,".to_string()),
-        (1 << 1, "\n\t\t\t\tPerm::PairedRead,".to_string()),
-        (1 << 2, "\n\t\t\t\tPerm::PairedWrite,".to_string()),
-        // Relevant for Bluetooth.
-        // (1 << 3, "\n\t\t\t\tPerm::Broadcast,".to_string()),
-        // aa set by homed just signals that aa may be supported. Setting up aa will always require a custom made app
-        // though. (1 << 4, "\n\t\t\t\tPerm::AdditionalAuthorization,".to_string()),
-        (1 << 5, "\n\t\t\t\tPerm::TimedWrite,".to_string()),
-        (1 << 6, "\n\t\t\t\tPerm::Hidden,".to_string()),
-        (1 << 7, "\n\t\t\t\tPerm::WriteResponse,".to_string()),
-    ];
+	let perms = vec![
+		(1 << 0, "\n\t\t\t\tPerm::Events,".to_string()),
+		(1 << 1, "\n\t\t\t\tPerm::PairedRead,".to_string()),
+		(1 << 2, "\n\t\t\t\tPerm::PairedWrite,".to_string()),
+		// Relevant for Bluetooth.
+		// (1 << 3, "\n\t\t\t\tPerm::Broadcast,".to_string()),
+		// aa set by homed just signals that aa may be supported. Setting up aa will always require
+		// a custom made app though. (1 << 4,
+		// "\n\t\t\t\tPerm::AdditionalAuthorization,".to_string()),
+		(1 << 5, "\n\t\t\t\tPerm::TimedWrite,".to_string()),
+		(1 << 6, "\n\t\t\t\tPerm::Hidden,".to_string()),
+		(1 << 7, "\n\t\t\t\tPerm::WriteResponse,".to_string()),
+	];
 
-    let properties_bitmap = h.param(0).unwrap().value().as_u64().unwrap();
+	let properties_bitmap = h.param(0).unwrap().value().as_u64().unwrap();
 
-    for (bitmap, name) in perms {
-        // if it stays the same, the bit is set
-        if (bitmap | properties_bitmap) == properties_bitmap {
-            out.write(&name)?;
-        }
-    }
+	for (bitmap, name) in perms {
+		// if it stays the same, the bit is set
+		if (bitmap | properties_bitmap) == properties_bitmap {
+			out.write(&name)?;
+		}
+	}
 
-    Ok(())
+	Ok(())
 }
 
 fn float_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let format = h.param(0).unwrap().value().as_str().unwrap();
-    if format == "float" {
-        out.write(" as f32")?;
-    }
-    Ok(())
+	let format = h.param(0).unwrap().value().as_str().unwrap();
+	if format == "float" {
+		out.write(" as f32")?;
+	}
+	Ok(())
 }
 
 fn array_length_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let array = h.param(0).unwrap().value().as_array().unwrap();
-    out.write(&format!("{}", array.len()))?;
-    Ok(())
+	let array = h.param(0).unwrap().value().as_array().unwrap();
+	out.write(&format!("{}", array.len()))?;
+	Ok(())
 }
 
-fn shorten_uuid(id: &str) -> String { id.trim_start_matches('0').to_owned() }
+fn shorten_uuid(id: &str) -> String {
+	id.trim_start_matches('0').to_owned()
+}
 
 fn snake_case_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value().as_str().unwrap();
-    let name = param
-        .replace(" ", "_")
-        .replace(".", "_")
-        .replace("-", "_")
-        .to_lowercase();
-    out.write(&name)?;
-    Ok(())
+	let param = h.param(0).unwrap().value().as_str().unwrap();
+	let name = param.replace(" ", "_").replace(".", "_").replace("-", "_").to_lowercase();
+	out.write(&name)?;
+	Ok(())
 }
 
 fn pascal_case_helper(
-    h: &Helper,
-    _: &Handlebars,
-    _: &Context,
-    _: &mut RenderContext,
-    out: &mut dyn Output,
+	h: &Helper,
+	_: &Handlebars,
+	_: &Context,
+	_: &mut RenderContext,
+	out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h.param(0).unwrap().value().as_str().unwrap().to_owned();
-    let param = param.replace("-", " ");
-    let name = param
-        .to_lowercase()
-        .split(" ")
-        .into_iter()
-        .map(|word| {
-            let mut c = word.chars().collect::<Vec<char>>();
-            c[0] = c[0].to_uppercase().nth(0).unwrap();
-            c.into_iter().collect::<String>()
-        })
-        .collect::<String>();
-    let name = name.replace(" ", "").replace(".", "_");
-    out.write(&name)?;
-    Ok(())
+	let param = h.param(0).unwrap().value().as_str().unwrap().to_owned();
+	let param = param.replace("-", " ");
+	let name = param
+		.to_lowercase()
+		.split(" ")
+		.into_iter()
+		.map(|word| {
+			let mut c = word.chars().collect::<Vec<char>>();
+			c[0] = c[0].to_uppercase().nth(0).unwrap();
+			c.into_iter().collect::<String>()
+		})
+		.collect::<String>();
+	let name = name.replace(" ", "").replace(".", "_");
+	out.write(&name)?;
+	Ok(())
 }
 
 static CATEGORIES: &'static str = "// this file is auto-generated by hap-codegen\n
@@ -1091,12 +1096,7 @@ impl HapService for {{pascal_case service.DefaultDescription}}Service {
     }
 
     fn get_mut_characteristic(&mut self, hap_type: HapType) -> Option<&mut dyn HapCharacteristic> {
-        for characteristic in self.get_mut_characteristics() {
-            if characteristic.get_type() == hap_type {
-                return Some(characteristic);
-            }
-        }
-        None
+        self.get_mut_characteristics().into_iter().find(|characteristic| characteristic.get_type() == hap_type)
     }
 
     fn get_characteristics(&self) -> Vec<&dyn HapCharacteristic> {
@@ -1295,272 +1295,254 @@ async fn main() -> Result<()> {
 }
 ";
 
-/// Services for which accessories need some level of manual adjustment and therefore we don't want to auto-generate an
-/// accesory for.
+/// Services for which accessories need some level of manual adjustment and therefore we don't want
+/// to auto-generate an accesory for.
 const NON_IDIOMATIC_SERVICES: &'static [&'static str] = &[
-    "access code",
-    "accessory information",
-    "accessory metrics",
-    "access control",
-    "accessory runtime information",
-    "asset update",
-    "assistant",
-    "audio stream management",
-    "battery",
-    "camera operating mode",
-    "camera recording management",
-    "camera stream management",
-    "cloud relay",
-    "data stream transport management",
-    "diagnostics",
-    "doorbell",
-    "faucet",
-    "filter maintenance",
-    "heater-cooler",
-    "input source",
-    "irrigation-system",
-    "label",
-    "lightbulb",
-    "lock management",
-    "lock mechanism",
-    "microphone",
-    "nfc access service",
-    "pairing",
-    "power management",
-    "protocol information",
-    "siri",
-    "siri endpoint",
-    "slats",
-    "speaker",
-    "target control management",
-    "target control",
-    "television",
-    "thread transport",
-    "transfer transport management",
-    "valve",
-    "wi-fi transport",
+	"access code",
+	"accessory information",
+	"accessory metrics",
+	"access control",
+	"accessory runtime information",
+	"asset update",
+	"assistant",
+	"audio stream management",
+	"battery",
+	"camera operating mode",
+	"camera recording management",
+	"camera stream management",
+	"cloud relay",
+	"data stream transport management",
+	"diagnostics",
+	"doorbell",
+	"faucet",
+	"filter maintenance",
+	"heater-cooler",
+	"input source",
+	"irrigation-system",
+	"label",
+	"lightbulb",
+	"lock management",
+	"lock mechanism",
+	"microphone",
+	"nfc access service",
+	"pairing",
+	"power management",
+	"protocol information",
+	"siri",
+	"siri endpoint",
+	"slats",
+	"speaker",
+	"target control management",
+	"target control",
+	"television",
+	"thread transport",
+	"transfer transport management",
+	"valve",
+	"wi-fi transport",
 ];
 
-/// Services for which we can auto-generate an accessory, but want to skip the example generation because the example
-/// needs some level of manual adjustment.
+/// Services for which we can auto-generate an accessory, but want to skip the example generation
+/// because the example needs some level of manual adjustment.
 const SKIP_EXAMPLE_GENERATION: &'static [&'static str] = &["humidifier-dehumidifier"];
 
-/// Example file names that are generated or edited manually and therefore shouldn't be overridden by codegen.
+/// Example file names that are generated or edited manually and therefore shouldn't be overridden
+/// by codegen.
 const MANUALLY_GENERATED_EXAMPLES: &'static [&'static str] = &[
-    "adding_accessories_dynamically.rs",
-    "async_callbacks.rs",
-    "bridged_accessories.rs",
-    "callbacks.rs",
-    "cooler.rs",
-    "custom_characteristics_services_accessories.rs",
-    "custom_multi_sensor.rs",
-    "dehumidifier.rs",
-    "faucet.rs",
-    "heater.rs",
-    "humidifier.rs",
-    "irrigation_system.rs",
-    "lightbulb.rs",
-    "lock.rs",
-    "setting_values_after_server_start.rs",
-    "shower_head.rs",
-    "storing_arbitrary_bytes.rs",
-    "sprinkler.rs",
-    "television.rs",
+	"adding_accessories_dynamically.rs",
+	"async_callbacks.rs",
+	"bridged_accessories.rs",
+	"callbacks.rs",
+	"cooler.rs",
+	"custom_characteristics_services_accessories.rs",
+	"custom_multi_sensor.rs",
+	"dehumidifier.rs",
+	"faucet.rs",
+	"heater.rs",
+	"humidifier.rs",
+	"irrigation_system.rs",
+	"lightbulb.rs",
+	"lock.rs",
+	"setting_values_after_server_start.rs",
+	"shower_head.rs",
+	"storing_arbitrary_bytes.rs",
+	"sprinkler.rs",
+	"television.rs",
 ];
 
 // TODO - manual overrides for valve type & media state values
 
 fn main() {
-    let metadata_file = File::open("codegen/gen/system.json").unwrap();
+	let metadata_file = File::open("codegen/gen/system.json").unwrap();
 
-    let metadata: SystemMetadata = serde_json::from_reader(&metadata_file).unwrap();
-    let metadata = RenderMetadata::from(metadata);
+	let metadata: SystemMetadata = serde_json::from_reader(&metadata_file).unwrap();
+	let metadata = RenderMetadata::from(metadata);
 
-    let mut handlebars = Handlebars::new();
-    handlebars.register_helper("if_eq", Box::new(if_eq_helper));
-    handlebars.register_helper("trim", Box::new(trim_helper));
-    handlebars.register_helper("file_name", Box::new(file_name_helper));
-    handlebars.register_helper("format", Box::new(format_helper));
-    handlebars.register_helper("type", Box::new(type_helper));
-    handlebars.register_helper("unit", Box::new(unit_helper));
-    handlebars.register_helper("category", Box::new(category_helper));
-    handlebars.register_helper("uuid", Box::new(uuid_helper));
-    handlebars.register_helper("in_values", Box::new(in_values_helper));
-    handlebars.register_helper("out_values", Box::new(out_values_helper));
-    handlebars.register_helper("in_values_enum", Box::new(in_values_enum_helper));
-    handlebars.register_helper("out_values_enum", Box::new(out_values_enum_helper));
-    handlebars.register_helper("perms", Box::new(perms_helper));
-    handlebars.register_helper("float", Box::new(float_helper));
-    handlebars.register_helper("array_length", Box::new(array_length_helper));
-    handlebars.register_helper("snake_case", Box::new(snake_case_helper));
-    handlebars.register_helper("pascal_case", Box::new(pascal_case_helper));
-    handlebars.register_template_string("categories", CATEGORIES).unwrap();
-    handlebars.register_template_string("hap_type", HAP_TYPE).unwrap(); // PascalCase camelCase
-    handlebars
-        .register_template_string("characteristic", CHARACTERISTIC)
-        .unwrap();
-    handlebars
-        .register_template_string("characteristic_mod", CHARACTERISTIC_MOD)
-        .unwrap();
-    handlebars.register_template_string("service", SERVICE).unwrap();
-    handlebars.register_template_string("service_mod", SERVICE_MOD).unwrap();
-    handlebars.register_template_string("accessory", ACCESSORY).unwrap();
-    handlebars
-        .register_template_string("accessory_mod", ACCESSORY_MOD)
-        .unwrap();
-    handlebars.register_template_string("example", EXAMPLE).unwrap();
+	let mut handlebars = Handlebars::new();
+	handlebars.register_helper("if_eq", Box::new(if_eq_helper));
+	handlebars.register_helper("trim", Box::new(trim_helper));
+	handlebars.register_helper("file_name", Box::new(file_name_helper));
+	handlebars.register_helper("format", Box::new(format_helper));
+	handlebars.register_helper("type", Box::new(type_helper));
+	handlebars.register_helper("unit", Box::new(unit_helper));
+	handlebars.register_helper("category", Box::new(category_helper));
+	handlebars.register_helper("uuid", Box::new(uuid_helper));
+	handlebars.register_helper("in_values", Box::new(in_values_helper));
+	handlebars.register_helper("out_values", Box::new(out_values_helper));
+	handlebars.register_helper("in_values_enum", Box::new(in_values_enum_helper));
+	handlebars.register_helper("out_values_enum", Box::new(out_values_enum_helper));
+	handlebars.register_helper("perms", Box::new(perms_helper));
+	handlebars.register_helper("float", Box::new(float_helper));
+	handlebars.register_helper("array_length", Box::new(array_length_helper));
+	handlebars.register_helper("snake_case", Box::new(snake_case_helper));
+	handlebars.register_helper("pascal_case", Box::new(pascal_case_helper));
+	handlebars.register_template_string("categories", CATEGORIES).unwrap();
+	handlebars.register_template_string("hap_type", HAP_TYPE).unwrap(); // PascalCase camelCase
+	handlebars.register_template_string("characteristic", CHARACTERISTIC).unwrap();
+	handlebars.register_template_string("characteristic_mod", CHARACTERISTIC_MOD).unwrap();
+	handlebars.register_template_string("service", SERVICE).unwrap();
+	handlebars.register_template_string("service_mod", SERVICE_MOD).unwrap();
+	handlebars.register_template_string("accessory", ACCESSORY).unwrap();
+	handlebars.register_template_string("accessory_mod", ACCESSORY_MOD).unwrap();
+	handlebars.register_template_string("example", EXAMPLE).unwrap();
 
-    let categories = handlebars.render("categories", &metadata).unwrap();
-    let categories_path = "src/accessory/category.rs".to_owned();
-    let mut categories_file = File::create(&categories_path).unwrap();
-    categories_file.write_all(categories.as_bytes()).unwrap();
+	let categories = handlebars.render("categories", &metadata).unwrap();
+	let categories_path = "src/accessory/category.rs".to_owned();
+	let mut categories_file = File::create(&categories_path).unwrap();
+	categories_file.write_all(categories.as_bytes()).unwrap();
 
-    let hap_type = handlebars.render("hap_type", &metadata).unwrap();
-    let hap_type_path = "src/hap_type.rs".to_owned();
-    let mut hap_type_file = File::create(&hap_type_path).unwrap();
-    hap_type_file.write_all(hap_type.as_bytes()).unwrap();
+	let hap_type = handlebars.render("hap_type", &metadata).unwrap();
+	let hap_type_path = "src/hap_type.rs".to_owned();
+	let mut hap_type_file = File::create(&hap_type_path).unwrap();
+	hap_type_file.write_all(hap_type.as_bytes()).unwrap();
 
-    let characteristic_base_path = "src/characteristic/generated/";
-    if std::path::Path::new(&characteristic_base_path).exists() {
-        fs::remove_dir_all(&characteristic_base_path).unwrap();
-    }
-    fs::create_dir_all(&characteristic_base_path).unwrap();
-    let mut characteristic_names = vec![];
-    for (c_name, c) in &metadata.characteristics {
-        let in_values = metadata.characteristic_in_values.get(c_name);
-        let out_values = metadata.characteristic_out_values.get(c_name);
+	let characteristic_base_path = "src/characteristic/generated/";
+	if std::path::Path::new(&characteristic_base_path).exists() {
+		fs::remove_dir_all(&characteristic_base_path).unwrap();
+	}
+	fs::create_dir_all(&characteristic_base_path).unwrap();
+	let mut characteristic_names = vec![];
+	for (c_name, c) in &metadata.characteristics {
+		let in_values = metadata.characteristic_in_values.get(c_name);
+		let out_values = metadata.characteristic_out_values.get(c_name);
 
-        let characteristic = handlebars
-            .render(
-                "characteristic",
-                &json!({ "characteristic": c, "in_values": in_values, "out_values": out_values }),
-            )
-            .unwrap();
+		let characteristic = handlebars
+			.render(
+				"characteristic",
+				&json!({ "characteristic": c, "in_values": in_values, "out_values": out_values }),
+			)
+			.unwrap();
 
-        let characteristic_file_name = c
-            .name
-            .replace(" ", "_")
-            .replace(".", "_")
-            .replace("-", "_")
-            .to_lowercase();
-        let mut characteristic_path = String::from(characteristic_base_path);
-        characteristic_path.push_str(&characteristic_file_name);
-        characteristic_path.push_str(".rs");
-        let mut characteristic_file = File::create(&characteristic_path).unwrap();
-        characteristic_file.write_all(characteristic.as_bytes()).unwrap();
-        characteristic_names.push(json!({ "name": c.name, "file_name": characteristic_file_name }));
-    }
-    characteristic_names.sort_by(|a, b| {
-        a.get("file_name")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .cmp(&b.get("file_name").unwrap().as_str().unwrap())
-    });
-    let characteristic_mod = handlebars
-        .render(
-            "characteristic_mod",
-            &json!({ "characteristics": characteristic_names }),
-        )
-        .unwrap();
-    let mut characteristic_mod_file = File::create(&format!("{}mod.rs", characteristic_base_path)).unwrap();
-    characteristic_mod_file
-        .write_all(characteristic_mod.as_bytes())
-        .unwrap();
+		let characteristic_file_name =
+			c.name.replace(" ", "_").replace(".", "_").replace("-", "_").to_lowercase();
+		let mut characteristic_path = String::from(characteristic_base_path);
+		characteristic_path.push_str(&characteristic_file_name);
+		characteristic_path.push_str(".rs");
+		let mut characteristic_file = File::create(&characteristic_path).unwrap();
+		characteristic_file.write_all(characteristic.as_bytes()).unwrap();
+		characteristic_names.push(json!({ "name": c.name, "file_name": characteristic_file_name }));
+	}
+	characteristic_names.sort_by(|a, b| {
+		a.get("file_name")
+			.unwrap()
+			.as_str()
+			.unwrap()
+			.cmp(&b.get("file_name").unwrap().as_str().unwrap())
+	});
+	let characteristic_mod = handlebars
+		.render("characteristic_mod", &json!({ "characteristics": characteristic_names }))
+		.unwrap();
+	let mut characteristic_mod_file =
+		File::create(&format!("{}mod.rs", characteristic_base_path)).unwrap();
+	characteristic_mod_file.write_all(characteristic_mod.as_bytes()).unwrap();
 
-    let service_base_path = "src/service/generated/";
-    let accessory_base_path = "src/accessory/generated/";
-    if std::path::Path::new(&service_base_path).exists() {
-        fs::remove_dir_all(&service_base_path).unwrap();
-    }
-    if std::path::Path::new(&accessory_base_path).exists() {
-        fs::remove_dir_all(&accessory_base_path).unwrap();
-    }
-    for entry in fs::read_dir("examples").unwrap() {
-        let entry = entry.unwrap();
+	let service_base_path = "src/service/generated/";
+	let accessory_base_path = "src/accessory/generated/";
+	if std::path::Path::new(&service_base_path).exists() {
+		fs::remove_dir_all(&service_base_path).unwrap();
+	}
+	if std::path::Path::new(&accessory_base_path).exists() {
+		fs::remove_dir_all(&accessory_base_path).unwrap();
+	}
+	for entry in fs::read_dir("examples").unwrap() {
+		let entry = entry.unwrap();
 
-        if entry.file_type().unwrap().is_file()
-            && !MANUALLY_GENERATED_EXAMPLES.contains(&entry.file_name().to_str().unwrap())
-        {
-            fs::remove_file(entry.path()).unwrap();
-        }
-    }
-    fs::create_dir_all(&service_base_path).unwrap();
-    fs::create_dir_all(&accessory_base_path).unwrap();
-    let mut service_names = vec![];
-    let mut accessory_names = vec![];
-    for s in &metadata.sorted_services {
-        let mut required_characteristics = Vec::new();
-        let mut optional_characteristics = Vec::new();
+		if entry.file_type().unwrap().is_file()
+			&& !MANUALLY_GENERATED_EXAMPLES.contains(&entry.file_name().to_str().unwrap())
+		{
+			fs::remove_file(entry.path()).unwrap();
+		}
+	}
+	fs::create_dir_all(&service_base_path).unwrap();
+	fs::create_dir_all(&accessory_base_path).unwrap();
+	let mut service_names = vec![];
+	let mut accessory_names = vec![];
+	for s in &metadata.sorted_services {
+		let mut required_characteristics = Vec::new();
+		let mut optional_characteristics = Vec::new();
 
-        for c in &s.characteristics.required_characteristics {
-            required_characteristics.push(metadata.characteristics.get(c).unwrap().clone());
-        }
+		for c in &s.characteristics.required_characteristics {
+			required_characteristics.push(metadata.characteristics.get(c).unwrap().clone());
+		}
 
-        if let Some(o_cs) = &s.characteristics.optional_characteristics {
-            for c in o_cs {
-                optional_characteristics.push(metadata.characteristics.get(c).unwrap().clone());
-            }
-        }
+		if let Some(o_cs) = &s.characteristics.optional_characteristics {
+			for c in o_cs {
+				optional_characteristics.push(metadata.characteristics.get(c).unwrap().clone());
+			}
+		}
 
-        let service = handlebars
-            .render(
-                "service",
-                &json!({
-                    "service": s,
-                    "required_characteristics": &required_characteristics,
-                    "optional_characteristics": &optional_characteristics,
-                }),
-            )
-            .unwrap();
+		let service = handlebars
+			.render(
+				"service",
+				&json!({
+					"service": s,
+					"required_characteristics": &required_characteristics,
+					"optional_characteristics": &optional_characteristics,
+				}),
+			)
+			.unwrap();
 
-        let service_file_name = s
-            .name
-            .replace(" ", "_")
-            .replace(".", "_")
-            .replace("-", "_")
-            .to_lowercase();
-        let mut service_path = String::from(service_base_path);
-        service_path.push_str(&service_file_name);
-        service_path.push_str(".rs");
-        let mut service_file = File::create(&service_path).unwrap();
-        service_file.write_all(service.as_bytes()).unwrap();
+		let service_file_name =
+			s.name.replace(" ", "_").replace(".", "_").replace("-", "_").to_lowercase();
+		let mut service_path = String::from(service_base_path);
+		service_path.push_str(&service_file_name);
+		service_path.push_str(".rs");
+		let mut service_file = File::create(&service_path).unwrap();
+		service_file.write_all(service.as_bytes()).unwrap();
 
-        service_names.push(json!({ "name": s.name.clone(), "file_name": service_file_name.clone() }));
+		service_names
+			.push(json!({ "name": s.name.clone(), "file_name": service_file_name.clone() }));
 
-        if !NON_IDIOMATIC_SERVICES.contains(&s.name.to_lowercase().as_str()) {
-            let accessory = handlebars
-                .render(
-                    "accessory",
-                    &json!({"service": s, "characteristics": &metadata.characteristics}),
-                )
-                .unwrap();
-            let mut accessory_path = String::from(accessory_base_path);
-            accessory_path.push_str(&service_file_name);
-            accessory_path.push_str(".rs");
-            let mut accessory_file = File::create(&accessory_path).unwrap();
-            accessory_file.write_all(accessory.as_bytes()).unwrap();
+		if !NON_IDIOMATIC_SERVICES.contains(&s.name.to_lowercase().as_str()) {
+			let accessory = handlebars
+				.render(
+					"accessory",
+					&json!({"service": s, "characteristics": &metadata.characteristics}),
+				)
+				.unwrap();
+			let mut accessory_path = String::from(accessory_base_path);
+			accessory_path.push_str(&service_file_name);
+			accessory_path.push_str(".rs");
+			let mut accessory_file = File::create(&accessory_path).unwrap();
+			accessory_file.write_all(accessory.as_bytes()).unwrap();
 
-            if !SKIP_EXAMPLE_GENERATION.contains(&s.name.to_lowercase().as_str()) {
-                let example = handlebars.render("example", &json!({ "service": s })).unwrap();
-                let mut example_path = String::from("examples/");
-                example_path.push_str(&service_file_name);
-                example_path.push_str(".rs");
-                let mut example_file = File::create(&example_path).unwrap();
-                example_file.write_all(example.as_bytes()).unwrap();
-            }
+			if !SKIP_EXAMPLE_GENERATION.contains(&s.name.to_lowercase().as_str()) {
+				let example = handlebars.render("example", &json!({ "service": s })).unwrap();
+				let mut example_path = String::from("examples/");
+				example_path.push_str(&service_file_name);
+				example_path.push_str(".rs");
+				let mut example_file = File::create(&example_path).unwrap();
+				example_file.write_all(example.as_bytes()).unwrap();
+			}
 
-            accessory_names.push(json!({ "name": s.name.clone(), "file_name": service_file_name }));
-        }
-    }
-    let service_mod = handlebars
-        .render("service_mod", &json!({ "services": service_names }))
-        .unwrap();
-    let mut service_mod_file = File::create(&format!("{}mod.rs", service_base_path)).unwrap();
-    service_mod_file.write_all(service_mod.as_bytes()).unwrap();
-    let accessory_mod = handlebars
-        .render("accessory_mod", &json!({ "accessories": accessory_names }))
-        .unwrap();
-    let mut accessory_mod_file = File::create(&format!("{}mod.rs", accessory_base_path)).unwrap();
-    accessory_mod_file.write_all(accessory_mod.as_bytes()).unwrap();
+			accessory_names.push(json!({ "name": s.name.clone(), "file_name": service_file_name }));
+		}
+	}
+	let service_mod =
+		handlebars.render("service_mod", &json!({ "services": service_names })).unwrap();
+	let mut service_mod_file = File::create(&format!("{}mod.rs", service_base_path)).unwrap();
+	service_mod_file.write_all(service_mod.as_bytes()).unwrap();
+	let accessory_mod =
+		handlebars.render("accessory_mod", &json!({ "accessories": accessory_names })).unwrap();
+	let mut accessory_mod_file = File::create(&format!("{}mod.rs", accessory_base_path)).unwrap();
+	accessory_mod_file.write_all(accessory_mod.as_bytes()).unwrap();
 }

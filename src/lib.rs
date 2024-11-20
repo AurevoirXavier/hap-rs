@@ -4,11 +4,11 @@ pub use macaddr::MacAddr6 as MacAddress;
 pub use serde_json;
 
 pub use crate::{
-    config::Config,
-    error::Error,
-    hap_type::HapType,
-    pin::Pin,
-    transport::bonjour::{BonjourFeatureFlag, BonjourStatusFlag},
+	config::Config,
+	error::Error,
+	hap_type::HapType,
+	pin::Pin,
+	transport::bonjour::{BonjourFeatureFlag, BonjourStatusFlag},
 };
 
 mod config;

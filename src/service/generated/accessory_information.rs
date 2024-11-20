@@ -3,39 +3,35 @@
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 use crate::{
-    service::HapService,
-    characteristic::{
-        HapCharacteristic,
-		identify::IdentifyCharacteristic,
-		manufacturer::ManufacturerCharacteristic,
-		model::ModelCharacteristic,
-		name::NameCharacteristic,
-		serial_number::SerialNumberCharacteristic,
+	characteristic::{
 		accessory_flags::AccessoryFlagsCharacteristic,
 		application_matching_identifier::ApplicationMatchingIdentifierCharacteristic,
 		configured_name::ConfiguredNameCharacteristic,
 		firmware_revision::FirmwareRevisionCharacteristic,
 		hardware_finish::HardwareFinishCharacteristic,
-		hardware_revision::HardwareRevisionCharacteristic,
-		product_data::ProductDataCharacteristic,
-		software_revision::SoftwareRevisionCharacteristic,
+		hardware_revision::HardwareRevisionCharacteristic, identify::IdentifyCharacteristic,
+		manufacturer::ManufacturerCharacteristic, model::ModelCharacteristic,
+		name::NameCharacteristic, product_data::ProductDataCharacteristic,
+		serial_number::SerialNumberCharacteristic,
+		software_revision::SoftwareRevisionCharacteristic, HapCharacteristic,
 	},
-    HapType,
+	service::HapService,
+	HapType,
 };
 
 /// Accessory Information service.
 #[derive(Debug, Default)]
 pub struct AccessoryInformationService {
-    /// Instance ID of the Accessory Information service.
-    id: u64,
-    /// [`HapType`](HapType) of the Accessory Information service.
-    hap_type: HapType,
-    /// When set to true, this service is not visible to user.
-    hidden: bool,
-    /// When set to true, this is the primary service on the accessory.
-    primary: bool,
-    /// An array of numbers containing the instance IDs of the services that this service links to.
-    linked_services: Vec<u64>,
+	/// Instance ID of the Accessory Information service.
+	id: u64,
+	/// [`HapType`](HapType) of the Accessory Information service.
+	hap_type: HapType,
+	/// When set to true, this service is not visible to user.
+	hidden: bool,
+	/// When set to true, this is the primary service on the accessory.
+	primary: bool,
+	/// An array of numbers containing the instance IDs of the services that this service links to.
+	linked_services: Vec<u64>,
 
 	/// Identify characteristic (required).
 	pub identify: IdentifyCharacteristic,
@@ -67,127 +63,127 @@ pub struct AccessoryInformationService {
 }
 
 impl AccessoryInformationService {
-    /// Creates a new Accessory Information service.
-    pub fn new(id: u64, accessory_id: u64) -> Self {
-        Self {
-            id,
-            hap_type: HapType::AccessoryInformation,
-			identify: IdentifyCharacteristic::new(id + 1 + 0, accessory_id),
+	/// Creates a new Accessory Information service.
+	pub fn new(id: u64, accessory_id: u64) -> Self {
+		Self {
+			id,
+			hap_type: HapType::AccessoryInformation,
+			identify: IdentifyCharacteristic::new(id + 1, accessory_id),
 			manufacturer: ManufacturerCharacteristic::new(id + 1 + 1, accessory_id),
 			model: ModelCharacteristic::new(id + 1 + 2, accessory_id),
 			name: NameCharacteristic::new(id + 1 + 3, accessory_id),
 			serial_number: SerialNumberCharacteristic::new(id + 1 + 4, accessory_id),
-			accessory_flags: Some(AccessoryFlagsCharacteristic::new(id + 1 + 0 + 5, accessory_id)),
-			application_matching_identifier: Some(ApplicationMatchingIdentifierCharacteristic::new(id + 1 + 1 + 5, accessory_id)),
+			accessory_flags: Some(AccessoryFlagsCharacteristic::new(id + 1 + 5, accessory_id)),
+			application_matching_identifier: Some(
+				ApplicationMatchingIdentifierCharacteristic::new(id + 1 + 1 + 5, accessory_id),
+			),
 			configured_name: Some(ConfiguredNameCharacteristic::new(id + 1 + 2 + 5, accessory_id)),
-			firmware_revision: Some(FirmwareRevisionCharacteristic::new(id + 1 + 3 + 5, accessory_id)),
+			firmware_revision: Some(FirmwareRevisionCharacteristic::new(
+				id + 1 + 3 + 5,
+				accessory_id,
+			)),
 			hardware_finish: Some(HardwareFinishCharacteristic::new(id + 1 + 4 + 5, accessory_id)),
-			hardware_revision: Some(HardwareRevisionCharacteristic::new(id + 1 + 5 + 5, accessory_id)),
+			hardware_revision: Some(HardwareRevisionCharacteristic::new(
+				id + 1 + 5 + 5,
+				accessory_id,
+			)),
 			product_data: Some(ProductDataCharacteristic::new(id + 1 + 6 + 5, accessory_id)),
-			software_revision: Some(SoftwareRevisionCharacteristic::new(id + 1 + 7 + 5, accessory_id)),
+			software_revision: Some(SoftwareRevisionCharacteristic::new(
+				id + 1 + 7 + 5,
+				accessory_id,
+			)),
 			..Default::default()
-        }
-    }
+		}
+	}
 }
 
 impl HapService for AccessoryInformationService {
-    fn get_id(&self) -> u64 {
-        self.id
-    }
+	fn get_id(&self) -> u64 {
+		self.id
+	}
 
-    fn set_id(&mut self, id: u64) {
-        self.id = id;
-    }
+	fn set_id(&mut self, id: u64) {
+		self.id = id;
+	}
 
-    fn get_type(&self) -> HapType {
-        self.hap_type
-    }
+	fn get_type(&self) -> HapType {
+		self.hap_type
+	}
 
-    fn set_type(&mut self, hap_type: HapType) {
-        self.hap_type = hap_type;
-    }
+	fn set_type(&mut self, hap_type: HapType) {
+		self.hap_type = hap_type;
+	}
 
-    fn get_hidden(&self) -> bool {
-        self.hidden
-    }
+	fn get_hidden(&self) -> bool {
+		self.hidden
+	}
 
-    fn set_hidden(&mut self, hidden: bool) {
-        self.hidden = hidden;
-    }
+	fn set_hidden(&mut self, hidden: bool) {
+		self.hidden = hidden;
+	}
 
-    fn get_primary(&self) -> bool {
-        self.primary
-    }
+	fn get_primary(&self) -> bool {
+		self.primary
+	}
 
-    fn set_primary(&mut self, primary: bool) {
-        self.primary = primary;
-    }
+	fn set_primary(&mut self, primary: bool) {
+		self.primary = primary;
+	}
 
-    fn get_linked_services(&self) -> Vec<u64> {
-        self.linked_services.clone()
-    }
+	fn get_linked_services(&self) -> Vec<u64> {
+		self.linked_services.clone()
+	}
 
-    fn set_linked_services(&mut self, linked_services: Vec<u64>) {
-        self.linked_services = linked_services;
-    }
+	fn set_linked_services(&mut self, linked_services: Vec<u64>) {
+		self.linked_services = linked_services;
+	}
 
-    fn get_characteristic(&self, hap_type: HapType) -> Option<&dyn HapCharacteristic> {
-        for characteristic in self.get_characteristics() {
-            if characteristic.get_type() == hap_type {
-                return Some(characteristic);
-            }
-        }
-        None
-    }
+	fn get_characteristic(&self, hap_type: HapType) -> Option<&dyn HapCharacteristic> {
+		self.get_characteristics()
+			.into_iter()
+			.find(|&characteristic| characteristic.get_type() == hap_type)
+	}
 
-    fn get_mut_characteristic(&mut self, hap_type: HapType) -> Option<&mut dyn HapCharacteristic> {
-        for characteristic in self.get_mut_characteristics() {
-            if characteristic.get_type() == hap_type {
-                return Some(characteristic);
-            }
-        }
-        None
-    }
+	fn get_mut_characteristic(&mut self, hap_type: HapType) -> Option<&mut dyn HapCharacteristic> {
+		self.get_mut_characteristics()
+			.into_iter()
+			.find(|characteristic| characteristic.get_type() == hap_type)
+	}
 
-    fn get_characteristics(&self) -> Vec<&dyn HapCharacteristic> {
-        #[allow(unused_mut)]
-        let mut characteristics: Vec<&dyn HapCharacteristic> = vec![
-			&self.identify,
-			&self.manufacturer,
-			&self.model,
-			&self.name,
-			&self.serial_number,
-		];
+	fn get_characteristics(&self) -> Vec<&dyn HapCharacteristic> {
+		#[allow(unused_mut)]
+		let mut characteristics: Vec<&dyn HapCharacteristic> =
+			vec![&self.identify, &self.manufacturer, &self.model, &self.name, &self.serial_number];
 		if let Some(c) = &self.accessory_flags {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.application_matching_identifier {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.configured_name {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.firmware_revision {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.hardware_finish {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.hardware_revision {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.product_data {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &self.software_revision {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		characteristics
-    }
+	}
 
-    fn get_mut_characteristics(&mut self) -> Vec<&mut dyn HapCharacteristic> {
-        #[allow(unused_mut)]
-        let mut characteristics: Vec<&mut dyn HapCharacteristic> = vec![
+	fn get_mut_characteristics(&mut self) -> Vec<&mut dyn HapCharacteristic> {
+		#[allow(unused_mut)]
+		let mut characteristics: Vec<&mut dyn HapCharacteristic> = vec![
 			&mut self.identify,
 			&mut self.manufacturer,
 			&mut self.model,
@@ -195,42 +191,42 @@ impl HapService for AccessoryInformationService {
 			&mut self.serial_number,
 		];
 		if let Some(c) = &mut self.accessory_flags {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.application_matching_identifier {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.configured_name {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.firmware_revision {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.hardware_finish {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.hardware_revision {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.product_data {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		if let Some(c) = &mut self.software_revision {
-		    characteristics.push(c);
+			characteristics.push(c);
 		}
 		characteristics
-    }
+	}
 }
 
 impl Serialize for AccessoryInformationService {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mut state = serializer.serialize_struct("HapService", 5)?;
-        state.serialize_field("iid", &self.get_id())?;
-        state.serialize_field("type", &self.get_type())?;
-        state.serialize_field("hidden", &self.get_hidden())?;
-        state.serialize_field("primary", &self.get_primary())?;
-        state.serialize_field("characteristics", &self.get_characteristics())?;
-        // linked services left out for now
-        state.end()
-    }
+	fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+		let mut state = serializer.serialize_struct("HapService", 5)?;
+		state.serialize_field("iid", &self.get_id())?;
+		state.serialize_field("type", &self.get_type())?;
+		state.serialize_field("hidden", &self.get_hidden())?;
+		state.serialize_field("primary", &self.get_primary())?;
+		state.serialize_field("characteristics", &self.get_characteristics())?;
+		// linked services left out for now
+		state.end()
+	}
 }
